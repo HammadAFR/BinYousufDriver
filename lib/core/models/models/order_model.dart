@@ -3,7 +3,8 @@ class OrderModel {
   PlacedBy? placedBy;
   int? status;
   String? description;
-  int? deliveryTime;
+  int? deliveryDate;
+  String? deliveryTime;
   double? latitude;
   double? longitude;
   String? address;
@@ -21,6 +22,7 @@ class OrderModel {
       this.placedBy,
       this.status,
       this.description,
+      this.deliveryDate,
       this.deliveryTime,
       this.latitude,
       this.longitude,
@@ -40,6 +42,7 @@ class OrderModel {
         json['placed_by'] != null ? PlacedBy.fromJson(json['placed_by']) : null;
     status = json['status'];
     description = json['description'];
+    deliveryDate = json['deliveryDate'];
     deliveryTime = json['deliveryTime'];
     latitude = json['latitude'];
     longitude = json['longitude'];
@@ -67,6 +70,7 @@ class OrderModel {
     }
     data['status'] = status;
     data['description'] = description;
+    data['deliveryDate'] = deliveryDate;
     data['deliveryTime'] = deliveryTime;
     data['latitude'] = latitude;
     data['longitude'] = longitude;

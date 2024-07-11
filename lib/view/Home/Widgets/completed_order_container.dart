@@ -19,7 +19,7 @@ class CompletedOrderContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     DateTime dateTime =
-        DateTime.fromMillisecondsSinceEpoch(order.deliveryTime! * 1000);
+        DateTime.fromMillisecondsSinceEpoch(order.deliveryDate! * 1000);
     String formattedDate = DateFormat('d MMMM y').format(dateTime);
     return GestureDetector(
       onTap: () {

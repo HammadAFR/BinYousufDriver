@@ -3,7 +3,8 @@ class DeliverOrderModel {
   String? placedBy;
   int? status;
   String? description;
-  int? deliveryTime;
+  String? deliveryTime;
+  int? deliveryDate;
   double? latitude;
   double? longitude;
   String? address;
@@ -22,6 +23,7 @@ class DeliverOrderModel {
       this.placedBy,
       this.status,
       this.description,
+      this.deliveryDate,
       this.deliveryTime,
       this.latitude,
       this.longitude,
@@ -41,6 +43,7 @@ class DeliverOrderModel {
     placedBy = json['placed_by'];
     status = json['status'];
     description = json['description'];
+    deliveryDate = json['deliveryDate'];
     deliveryTime = json['deliveryTime'];
     latitude = json['latitude'];
     longitude = json['longitude'];
@@ -67,6 +70,7 @@ class DeliverOrderModel {
     data['placed_by'] = placedBy;
     data['status'] = status;
     data['description'] = description;
+    data['deliveryDate'] = deliveryDate;
     data['deliveryTime'] = deliveryTime;
     data['latitude'] = latitude;
     data['longitude'] = longitude;

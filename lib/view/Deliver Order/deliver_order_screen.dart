@@ -38,7 +38,7 @@ class _DeliverOrderScreenState extends State<DeliverOrderScreen> {
   @override
   Widget build(BuildContext context) {
     DateTime dateTime =
-        DateTime.fromMillisecondsSinceEpoch(widget.order.deliveryTime! * 1000);
+        DateTime.fromMillisecondsSinceEpoch(widget.order.deliveryDate! * 1000);
     String formattedDate = DateFormat('d MMMM y').format(dateTime);
     return Consumer<DeliverViewModel>(builder: (context, model, child) {
       return ModalProgressHUD(
