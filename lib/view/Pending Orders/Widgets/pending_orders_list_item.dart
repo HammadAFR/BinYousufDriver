@@ -14,7 +14,7 @@ class PendingOrdersList extends StatelessWidget {
   });
   final String image;
   final String name;
-  final int weight;
+  final String weight;
   final int quantity;
   final int amount;
 
@@ -30,7 +30,7 @@ class PendingOrdersList extends StatelessWidget {
               child: SizedBox(
                 child: Row(
                   children: [
-                    Image.asset(
+                    Image.network(
                       image,
                       width: 33.w,
                       height: 55.h,
@@ -50,7 +50,7 @@ class PendingOrdersList extends StatelessWidget {
                           ),
                         ),
                         outfitNormalText(
-                          text: '${weight}kg',
+                          text: weight,
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w300,
                         ),

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 
@@ -11,21 +12,34 @@ import '../../core/constants/colors.dart';
 import '../../core/constants/helper widgets/custom_button.dart';
 import '../../core/constants/styles.dart';
 import '../../core/enums/status.dart';
-import '../Delivery Success/delivery_success_screen.dart';
+import '../../core/models/models/order_model.dart';
+import '../../core/utils/general_utils.dart';
 import 'deliver_view_model.dart';
 
 class DeliverOrderScreen extends StatefulWidget {
-  const DeliverOrderScreen({super.key});
+  const DeliverOrderScreen({super.key, required this.order});
+
+  final OrderModel order;
 
   @override
   State<DeliverOrderScreen> createState() => _DeliverOrderScreenState();
 }
 
 class _DeliverOrderScreenState extends State<DeliverOrderScreen> {
-  static const LatLng _center = LatLng(32.8143, 73.8831);
+  @override
+  void initState() {
+    final locationProvider =
+        Provider.of<DeliverViewModel>(context, listen: false);
+    locationProvider.setDestinationLatLng(
+        widget.order.latitude!, widget.order.longitude!);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    DateTime dateTime =
+        DateTime.fromMillisecondsSinceEpoch(widget.order.deliveryTime! * 1000);
+    String formattedDate = DateFormat('d MMMM y').format(dateTime);
     return Consumer<DeliverViewModel>(builder: (context, model, child) {
       return ModalProgressHUD(
         inAsyncCall: model.state == ViewState.busy,
@@ -39,20 +53,16 @@ class _DeliverOrderScreenState extends State<DeliverOrderScreen> {
                 width: double.infinity,
                 child: GoogleMap(
                   onMapCreated: model.onMapCreated,
-                  markers: {
-                    Marker(
-                      markerId: const MarkerId('marker1'),
-                      position: LatLng(model.lat, model.lng),
-                    ),
-                  },
-                  initialCameraPosition:
-                      const CameraPosition(target: _center, zoom: 14.0),
-                  onTap: (argument) async {
-                    // latitude = argument.latitude;
-                    // longitude = argument.longitude;
-                    await model.setLatLng(
-                        argument.latitude, argument.longitude);
-                  },
+                  compassEnabled: false,
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: false,
+                  zoomControlsEnabled: false,
+                  initialCameraPosition: CameraPosition(
+                    target: LatLng(model.lat, model.lng),
+                    zoom: 14,
+                  ),
+                  markers: Set<Marker>.from(model.markers),
+                  polylines: Set<Polyline>.of(model.polylines.values),
                 ),
               ),
               Positioned(
@@ -90,45 +100,45 @@ class _DeliverOrderScreenState extends State<DeliverOrderScreen> {
                   ),
                 ),
               ),
-              Positioned(
-                top: 42.h,
-                right: 25.w,
-                child: Container(
-                  width: 44.w,
-                  height: 88.h,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.r),
-                    border: Border.all(color: mainColor),
-                    color: whiteColor,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          //TODO
-                        },
-                        child: const Icon(
-                          Icons.map_sharp,
-                          color: mainColor,
-                        ),
-                      ),
-                      const Divider(
-                        color: mainColor,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          //TODO
-                        },
-                        child: const Icon(
-                          Icons.send,
-                          color: mainColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              // Positioned(
+              //   top: 42.h,
+              //   right: 25.w,
+              //   child: Container(
+              //     width: 44.w,
+              //     height: 88.h,
+              //     decoration: BoxDecoration(
+              //       borderRadius: BorderRadius.circular(10.r),
+              //       border: Border.all(color: mainColor),
+              //       color: whiteColor,
+              //     ),
+              //     child: Column(
+              //       mainAxisAlignment: MainAxisAlignment.center,
+              //       children: [
+              //         GestureDetector(
+              //           onTap: () {
+              //             //TODO
+              //           },
+              //           child: const Icon(
+              //             Icons.map_sharp,
+              //             color: mainColor,
+              //           ),
+              //         ),
+              //         const Divider(
+              //           color: mainColor,
+              //         ),
+              //         GestureDetector(
+              //           onTap: () {
+              //             //TODO
+              //           },
+              //           child: const Icon(
+              //             Icons.send,
+              //             color: mainColor,
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
             ],
           ),
           bottomSheet: Container(
@@ -146,14 +156,62 @@ class _DeliverOrderScreenState extends State<DeliverOrderScreen> {
             child: Column(
               children: [
                 SizedBox(height: 20.h),
-                GestureDetector(
-                  onTap: () {
-                    Get.to(const DeliverySuccessScreen());
-                  },
-                  child: CustomButton(
-                    text: 'Deliver',
-                    width: 327.w,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        model.launchMapOnAndroid(context,
+                            widget.order.latitude!, widget.order.longitude!);
+                      },
+                      child: CustomButton(
+                        text: 'Raasta',
+                        width: 160.w,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Center(
+                                child: outfitTitleText(text: 'Confirmation'),
+                              ),
+                              content: outfitMediumText(
+                                text: 'Kya aap ne order deliver kar diya hai?',
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Get.back(); // Close the dialog
+                                  },
+                                  child: outfitNormalText(text: 'Nahi'),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    Get.back(); // Close the dialog
+                                    final bool orderDelivered = await model
+                                        .deliverOrder(widget.order.id!);
+                                    if (orderDelivered == false) {
+                                      Utils.toastMessage(
+                                        'Aapka Order Deliver Nahi Ho Saka',
+                                      );
+                                    }
+                                  },
+                                  child: outfitNormalText(text: 'Haan'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: CustomButton(
+                        text: 'Deliver',
+                        width: 160.w,
+                      ),
+                    ),
+                  ],
                 ),
                 SizedBox(height: 10.h),
                 Row(
@@ -165,7 +223,7 @@ class _DeliverOrderScreenState extends State<DeliverOrderScreen> {
                       fontWeight: FontWeight.w600,
                     ),
                     outfitNormalText(
-                      text: '20th Feb 2024',
+                      text: formattedDate,
                       fontSize: 12.sp,
                       color: textGreyColor2,
                     ),
@@ -221,7 +279,8 @@ class _DeliverOrderScreenState extends State<DeliverOrderScreen> {
                             SizedBox(
                               width: 280.w,
                               child: outfitMediumText(
-                                text: 'Spinzar Plaza, Abdara Road Peshawar',
+                                //////////////////have to change this hardcoded location
+                                text: 'Karkhano Market',
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.w600,
                                 textOverflow: TextOverflow.ellipsis,
@@ -232,7 +291,7 @@ class _DeliverOrderScreenState extends State<DeliverOrderScreen> {
                               width: 280.w,
                               padding: EdgeInsets.only(bottom: 4.h),
                               child: outfitMediumText(
-                                text: 'Hayatabad, Peshawar',
+                                text: widget.order.address!,
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.w600,
                                 textOverflow: TextOverflow.ellipsis,

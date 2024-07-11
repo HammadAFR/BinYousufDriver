@@ -11,6 +11,7 @@ const Color darkGreyColor = Color(0xFF474646);
 const Color lightGreyColor = Color(0xFFD9D9D9);
 const Color textGreyColor = Color.fromRGBO(190, 188, 188, 1);
 const Color textGreyColor2 = Color(0xFF61676F);
+const Color textGreyColor3 = Color.fromARGB(255, 109, 107, 107);
 
 const Color redColor = Color(0xFFED0000);
 const Color greenColor = Color.fromARGB(255, 5, 173, 47);

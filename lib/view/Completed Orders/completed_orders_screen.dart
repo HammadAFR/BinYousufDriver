@@ -1,20 +1,22 @@
-import 'package:bin_yousuf_driver/core/constants/assets.dart';
 import 'package:bin_yousuf_driver/core/constants/colors.dart';
 import 'package:bin_yousuf_driver/core/constants/styles.dart';
 import 'package:bin_yousuf_driver/core/constants/helper%20widgets/custom_button.dart';
 import 'package:bin_yousuf_driver/view/Completed%20Orders/Widgets/completed_orders_list_item.dart';
 import 'package:bin_yousuf_driver/view/Receipt/receipt_screen.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+
+import '../../core/models/models/order_model.dart';
 
 class CompletedOrdersScreen extends StatefulWidget {
   const CompletedOrdersScreen({
     super.key,
     required this.title,
+    required this.order,
   });
   final String title;
+  final OrderModel order;
 
   @override
   State<CompletedOrdersScreen> createState() => _CompletedOrdersScreenState();
@@ -62,7 +64,7 @@ class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
                     ),
                   ),
                   child: outfitMediumText(
-                    text: 'ORDER #1122334455',
+                    text: 'Order# ${widget.order.orderNumber.toString()}',
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w500,
                   ),
@@ -128,14 +130,14 @@ class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: 4,
+                    itemCount: widget.order.items!.length,
                     itemBuilder: (context, index) {
                       return CompletedOrdersList(
-                        name: 'Daal Channa Supreme',
-                        image: daalChannaSupreme,
-                        weight: 5,
-                        quantity: 2,
-                        amount: 2200,
+                        name: widget.order.items![index].name!,
+                        image: widget.order.items![index].attachment!,
+                        weight: widget.order.items![index].weight!,
+                        quantity: widget.order.items![index].quantity!,
+                        amount: widget.order.items![index].price!,
                       );
                     },
                   ),
@@ -151,11 +153,11 @@ class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       outfitNormalText(
-                        text: 'Qeemat (4 items)',
+                        text: 'Qeemat (${widget.order.items!.length} items)',
                         fontSize: 14.sp,
                       ),
                       outfitMediumText(
-                        text: 'Rs. 9800',
+                        text: 'Rs. ${widget.order.amount}',
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w600,
                       ),
@@ -187,7 +189,7 @@ class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
                         fontSize: 14.sp,
                       ),
                       outfitMediumText(
-                        text: 'Rs. 9800',
+                        text: 'Rs. ${widget.order.amount}',
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w600,
                       ),
@@ -199,7 +201,9 @@ class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
             SizedBox(height: 50.h),
             GestureDetector(
               onTap: () {
-                Get.to(const ReceiptScreen());
+                Get.to(() => ReceiptScreen(
+                      order: widget.order,
+                    ));
               },
               child: const CustomButton(
                 text: 'View Receipt',

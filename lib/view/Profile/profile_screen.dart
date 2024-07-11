@@ -2,9 +2,15 @@ import 'package:bin_yousuf_driver/core/constants/assets.dart';
 import 'package:bin_yousuf_driver/core/constants/colors.dart';
 import 'package:bin_yousuf_driver/core/constants/styles.dart';
 import 'package:bin_yousuf_driver/core/constants/helper%20widgets/custom_button.dart';
+import 'package:bin_yousuf_driver/view/Home/home_screen_view_model.dart';
+import 'package:bin_yousuf_driver/view/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -49,10 +55,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Image.asset(
-                    profileImage,
-                    width: 90.w,
-                    height: 90.h,
+                  CircleAvatar(
+                    radius: 45.r,
+                    backgroundColor: Colors.transparent,
+                    child: ClipOval(
+                      child: Image.network(
+                        globalUserModel.profileImage!,
+                        width: 90.w,
+                        height: 90.h,
+                      ),
+                    ),
                   ),
                   SizedBox(
                     child: Column(
@@ -60,7 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         outfitMediumText(
-                          text: 'Mustafa',
+                          text: globalUserModel.name!,
                           fontSize: 24.sp,
                           fontWeight: FontWeight.w600,
                         ),
@@ -97,7 +109,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   outfitNormalText(
-                                    text: 'Mustafa',
+                                    text: globalUserModel.cnic!,
                                     fontSize: 12,
                                     maxLines: 1,
                                     textOverflow: TextOverflow.ellipsis,
@@ -105,7 +117,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     color: darkGreyColor,
                                   ),
                                   outfitNormalText(
-                                    text: '0300-1234567',
+                                    text: globalUserModel.mobileNumber!,
                                     fontSize: 12,
                                     fontWeight: FontWeight.w300,
                                     maxLines: 1,
@@ -113,7 +125,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     color: darkGreyColor,
                                   ),
                                   outfitNormalText(
-                                    text: 'ABC 804',
+                                    text: globalUserModel.vehicleNumber!,
                                     fontSize: 12,
                                     maxLines: 1,
                                     textOverflow: TextOverflow.ellipsis,
@@ -151,71 +163,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Row(
-                  //   children: [
-                  //     SizedBox(width: 8.w),
-                  //     SizedBox(
-                  //       width: 20.w,
-                  //       child: Image.asset(
-                  //         editProfile,
-                  //         width: 20.w,
-                  //         height: 20.h,
-                  //         color: darkGreyColor,
-                  //       ),
-                  //     ),
-                  //     SizedBox(width: 12.w),
-                  //     outfitTitleText(
-                  //       text: 'Edit Profile',
-                  //       fontSize: 15.sp,
-                  //       color: darkGreyColor,
-                  //     ),
-                  //   ],
-                  // ),
-                  // const Divider(
-                  //   color: lightGreyColor,
-                  // ),
-                  Row(
-                    children: [
-                      SizedBox(width: 8.w),
-                      SizedBox(
-                        width: 20.w,
-                        child: Image.asset(
-                          shareApp,
+                  GestureDetector(
+                    onTap: () {
+                      Share.share(
+                          'Check out Bin Yousuf App : https://www.google.com/');
+                    },
+                    child: Row(
+                      children: [
+                        SizedBox(width: 8.w),
+                        SizedBox(
                           width: 20.w,
-                          height: 20.h,
+                          child: Image.asset(
+                            shareApp,
+                            width: 20.w,
+                            height: 20.h,
+                            color: darkGreyColor,
+                          ),
+                        ),
+                        SizedBox(width: 12.w),
+                        outfitTitleText(
+                          text: 'Share App',
+                          fontSize: 15.sp,
                           color: darkGreyColor,
                         ),
-                      ),
-                      SizedBox(width: 12.w),
-                      outfitTitleText(
-                        text: 'Share App',
-                        fontSize: 15.sp,
-                        color: darkGreyColor,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   const Divider(
                     color: lightGreyColor,
                   ),
-                  Row(
-                    children: [
-                      SizedBox(width: 8.w),
-                      SizedBox(
-                        width: 20.w,
-                        child: Image.asset(
-                          whatsappBlack,
+                  GestureDetector(
+                    onTap: () {
+                      Provider.of<HomeScreenViewModel>(context, listen: false)
+                          .openWhatsapp(context);
+                    },
+                    child: Row(
+                      children: [
+                        SizedBox(width: 8.w),
+                        SizedBox(
                           width: 20.w,
-                          height: 20.h,
+                          child: Image.asset(
+                            whatsappBlack,
+                            width: 20.w,
+                            height: 20.h,
+                            color: darkGreyColor,
+                          ),
+                        ),
+                        SizedBox(width: 12.w),
+                        outfitTitleText(
+                          text: 'WhatsApp Helpline',
+                          fontSize: 15.sp,
                           color: darkGreyColor,
                         ),
-                      ),
-                      SizedBox(width: 12.w),
-                      outfitTitleText(
-                        text: 'WhatsApp Helpline',
-                        fontSize: 15.sp,
-                        color: darkGreyColor,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   const Divider(
                     color: lightGreyColor,
@@ -297,11 +298,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     textColor: blackColor,
                                     buttonColor: lightGreyColor,
                                   ),
-                                  CustomTransparentButton(
-                                    text: 'Yes, Logout',
-                                    width: 149.w,
-                                    textColor: mainColor,
-                                    borderColor: mainColor,
+                                  GestureDetector(
+                                    onTap: () async {
+                                      final prefs =
+                                          await SharedPreferences.getInstance();
+                                      prefs.clear();
+                                      Get.offAll(() => const SplashScreen());
+                                    },
+                                    child: CustomTransparentButton(
+                                      text: 'Yes, Logout',
+                                      width: 149.w,
+                                      textColor: mainColor,
+                                      borderColor: mainColor,
+                                    ),
                                   ),
                                 ],
                               )

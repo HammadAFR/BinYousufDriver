@@ -25,6 +25,7 @@ class _SignInScreenState extends State<SignInScreen> {
   String phoneNumber = '';
   bool isPhoneValid = false;
   FocusNode phoneFocusNode = FocusNode();
+  bool locationEnabled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -140,12 +141,16 @@ class _SignInScreenState extends State<SignInScreen> {
                         SizedBox(height: 35.h),
                         GestureDetector(
                           onTap: () async {
-                            if (isPhoneValid && phoneNumber != "") {
-                              await model.verifyPhoneNumber(
-                                  phoneNumber, false, context);
-                            } else {
-                              Utils.flushbarMessage(
-                                  'Phone Number theek se likhiye', context);
+                            locationEnabled =
+                                await model.handleLocationPermission();
+                            if (locationEnabled) {
+                              if (isPhoneValid && phoneNumber != "") {
+                                await model.verifyPhoneNumber(
+                                    phoneNumber, false, context);
+                              } else {
+                                Utils.flushbarMessage(
+                                    'Phone Number theek se likhiye', context);
+                              }
                             }
                           },
                           child: const CustomButton(text: 'Agay Barhein'),

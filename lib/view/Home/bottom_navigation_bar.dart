@@ -6,6 +6,12 @@ import 'package:bin_yousuf_driver/view/Notification/notification_screen.dart';
 import 'package:bin_yousuf_driver/view/Profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:provider/provider.dart';
+
+import '../Notification/notification_controller.dart';
+import '../Notification/notifications_view_model.dart';
+import '../splash_screen.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   CustomBottomNavigationBar({super.key, required this.pageIndex});
@@ -17,7 +23,7 @@ class CustomBottomNavigationBar extends StatefulWidget {
 }
 
 class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
-  // int selectedIndex = 0;
+  final NotificationsController _notificationsController = Get.find();
 
   List<Widget> screens = [
     const HomeScreen(),
@@ -81,6 +87,12 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                     )
                   : GestureDetector(
                       onTap: () {
+                        final notificationProvider =
+                            Provider.of<NotificationsViewModel>(context,
+                                listen: false);
+                        if (notificationProvider.hasRead) {
+                          notificationProvider.clearUnreadCount();
+                        }
                         setState(() {
                           widget.pageIndex = 0;
                         });
@@ -135,17 +147,45 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                     )
                   : GestureDetector(
                       onTap: () {
+                        _notificationsController.resetUnreadCount();
                         setState(() {
                           widget.pageIndex = 1;
                         });
                       },
                       child: SizedBox(
                         width: 102.w,
-                        child: Image.asset(
-                          notificationIcon,
-                          width: 25.w,
-                          height: 25.h,
-                          color: whiteColor,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Image.asset(
+                              notificationIcon,
+                              width: 25.w,
+                              height: 25.h,
+                              color: whiteColor,
+                            ),
+                            Positioned(
+                              right: 43.w,
+                              top: 0.h,
+                              child: Obx(
+                                () => Visibility(
+                                  visible:
+                                      (_notificationsController.unreadCount >
+                                              0 ||
+                                          globalNotificationCountModel!
+                                                  .unreadCount! >
+                                              0),
+                                  child: Container(
+                                    width: 6.w,
+                                    height: 6.w,
+                                    decoration: const BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: redColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -189,6 +229,13 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                     )
                   : GestureDetector(
                       onTap: () {
+                        final notificationProvider =
+                            Provider.of<NotificationsViewModel>(context,
+                                listen: false);
+                        if (notificationProvider.hasRead) {
+                          notificationProvider.clearUnreadCount();
+                        }
+
                         setState(() {
                           widget.pageIndex = 2;
                         });

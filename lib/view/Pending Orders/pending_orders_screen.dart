@@ -1,4 +1,3 @@
-import 'package:bin_yousuf_driver/core/constants/assets.dart';
 import 'package:bin_yousuf_driver/core/constants/colors.dart';
 import 'package:bin_yousuf_driver/core/constants/styles.dart';
 import 'package:bin_yousuf_driver/core/constants/helper%20widgets/custom_button.dart';
@@ -10,12 +9,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import '../../core/models/models/order_model.dart';
+
 class PendingOrdersScreen extends StatefulWidget {
   const PendingOrdersScreen({
     super.key,
     required this.title,
+    required this.order,
   });
   final String title;
+  final OrderModel order;
 
   @override
   State<PendingOrdersScreen> createState() => _PendingOrdersScreenState();
@@ -61,7 +64,7 @@ class _PendingOrdersScreenState extends State<PendingOrdersScreen> {
                   ),
                 ),
                 child: outfitMediumText(
-                  text: 'ORDER #1122334455',
+                  text: 'Order# ${widget.order.orderNumber.toString()}',
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w500,
                 ),
@@ -99,14 +102,14 @@ class _PendingOrdersScreenState extends State<PendingOrdersScreen> {
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: 4,
+                    itemCount: widget.order.items!.length,
                     itemBuilder: (context, index) {
                       return PendingOrdersList(
-                        name: 'Daal Channa Supreme',
-                        image: daalChannaSupreme,
-                        weight: 5,
-                        quantity: 2,
-                        amount: 2200,
+                        name: widget.order.items![index].name!,
+                        image: widget.order.items![index].attachment!,
+                        weight: widget.order.items![index].weight!,
+                        quantity: widget.order.items![index].quantity!,
+                        amount: widget.order.items![index].price!,
                       );
                     },
                   ),
@@ -122,11 +125,11 @@ class _PendingOrdersScreenState extends State<PendingOrdersScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       outfitNormalText(
-                        text: 'Qeemat (4 items)',
+                        text: 'Qeemat (${widget.order.items!.length} items)',
                         fontSize: 14.sp,
                       ),
                       outfitMediumText(
-                        text: 'Rs. 9800',
+                        text: 'Rs. ${widget.order.amount!}',
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w600,
                       ),
@@ -158,7 +161,7 @@ class _PendingOrdersScreenState extends State<PendingOrdersScreen> {
                         fontSize: 14.sp,
                       ),
                       outfitMediumText(
-                        text: 'Rs. 9800',
+                        text: 'Rs. ${widget.order.amount!}',
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w600,
                       ),
@@ -170,7 +173,9 @@ class _PendingOrdersScreenState extends State<PendingOrdersScreen> {
             SizedBox(height: 50.h),
             GestureDetector(
               onTap: () {
-                Get.to(const DeliverOrderScreen());
+                Get.to(DeliverOrderScreen(
+                  order: widget.order,
+                ));
               },
               child: const CustomButton(
                 text: 'Deliver Now',

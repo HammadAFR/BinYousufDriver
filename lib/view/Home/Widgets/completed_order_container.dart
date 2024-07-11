@@ -5,19 +5,28 @@ import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+
+import '../../../core/models/models/order_model.dart';
 
 class CompletedOrderContainer extends StatelessWidget {
   const CompletedOrderContainer({
     super.key,
+    required this.order,
   });
+  final OrderModel order;
 
   @override
   Widget build(BuildContext context) {
+    DateTime dateTime =
+        DateTime.fromMillisecondsSinceEpoch(order.deliveryTime! * 1000);
+    String formattedDate = DateFormat('d MMMM y').format(dateTime);
     return GestureDetector(
       onTap: () {
         Get.to(
-          const CompletedOrdersScreen(
-            title: '20th Feb 2024',
+          () => CompletedOrdersScreen(
+            title: formattedDate,
+            order: order,
           ),
         );
       },
@@ -76,7 +85,7 @@ class CompletedOrderContainer extends StatelessWidget {
                       SizedBox(
                         width: 280.w,
                         child: outfitMediumText(
-                          text: 'Spinzar Plaza, Abdara Road Peshawar',
+                          text: 'Karkhano Market',
                           fontSize: 13.sp,
                           fontWeight: FontWeight.w600,
                           textOverflow: TextOverflow.ellipsis,
@@ -87,7 +96,7 @@ class CompletedOrderContainer extends StatelessWidget {
                         width: 280.w,
                         padding: EdgeInsets.only(bottom: 4.h),
                         child: outfitMediumText(
-                          text: 'Hayatabad, Peshawar',
+                          text: order.address!,
                           fontSize: 13.sp,
                           fontWeight: FontWeight.w600,
                           textOverflow: TextOverflow.ellipsis,
